@@ -18,3 +18,13 @@ Mid-exam - 20%
 Final exam - 45%  
 Assignment - 20%   
 TO pass - 60%  
+
+
+create table usermn(
+   user_id number(8),
+   name varchar(50),
+   email varchar(70),
+   password varchar(20),
+   primary key(user_id)
+)
+
