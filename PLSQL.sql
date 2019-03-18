@@ -13,7 +13,7 @@ CREATE FUNCTION get_bal(acc_no IN NUMBER)
       RETURN(acc_bal); 
     END;
 
-select get_bal(2) from dual;
+select get_bal(3) from dual;
 
 
 create OR REPLACE  function incs(num IN NUMBER) return NUMBER
@@ -27,6 +27,30 @@ create OR REPLACE  function incs(num IN NUMBER) return NUMBER
     END;
 
 select incs(10) from dual;
+
+
+CREATE or replace FUNCTION get_bal_reliable(acc_no IN NUMBER) 
+   RETURN NUMBER 
+   IS acc_bal NUMBER(11,2);
+   BEGIN 
+      SELECT amount 
+      INTO acc_bal 
+      FROM amount 
+      WHERE id = acc_no; 
+    RETURN(acc_bal);
+   EXCEPTION 
+       WHEN TOO_MANY_ROWS THEN 
+          dbms_output.put_line('No such customer!'); 
+          return(0);
+      WHEN no_data_found THEN 
+          dbms_output.put_line('No such customer!'); 
+          return(0);
+      WHEN others THEN 
+          dbms_output.put_line('Error!'); 
+
+   END;
+
+select get_bal_reliable(309) from dual;
 
 
 create OR REPLACE  function incsfor(num IN NUMBER) return NUMBER
@@ -48,7 +72,7 @@ create OR REPLACE  procedure pc1(num IN NUMBER)
     IS sum1 NUMBER(8,0);
     rec amount%ROWTYPE;    
     BEGIN
-      FOR rec IN  (select name from amount) LOOP
+      FOR rec IN  (select * from amount) LOOP
         DBMS_OUTPUT.PUT_LINE(rec.name );
       END LOOP;
     END;
@@ -81,18 +105,11 @@ CREATE TYPE UserType AS OBJECT
      name varchar2(50)
 );
 
-CREATE OR REPLACE TYPE test_type AS TABLE OF NUMBER;
-CREATE OR REPLACE FUNCTION test_func RETURN test_type 
-    PIPELINED
-    AS
-    BEGIN
-     FOR i IN 1..100
-     LOOP
-        PIPE ROW(i);
-      END LOOP;
-    END;
+/* to create array of numbers */
+CREATE TYPE test_type AS TABLE OF NUMBER;
 
-create or replace type user_collection  as table of UserType;
+/* creates array of UserType objects */
+create type user_collection  as table of UserType;
 
 
 CREATE OR REPLACE FUNCTION get_row_am(a_rows IN NUMBER) RETURN user_collection 
@@ -108,10 +125,6 @@ END;
 
 
 select * from table(get_row_am(4));
-
-
-
-
 
 
 DECLARE 
